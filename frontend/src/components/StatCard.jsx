@@ -47,23 +47,23 @@ export default function StatCard({ icon: Icon, label, value, subtitle, index = 0
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative rounded-2xl p-6 glass hover:glow-purple-sm transition-all duration-300 cursor-default"
+      className="group relative rounded-2xl p-8 glass hover:glow-purple-sm transition-all duration-300 cursor-default"
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <div className="relative">
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-4 mb-4">
           {Icon && (
-            <div className="w-10 h-10 rounded-xl bg-purple-accent/10 flex items-center justify-center text-purple-accent group-hover:bg-purple-accent/20 transition-colors">
-              <Icon className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-xl bg-purple-accent/10 flex items-center justify-center text-purple-accent group-hover:bg-purple-accent/20 transition-colors">
+              <Icon className="w-6 h-6" />
             </div>
           )}
-          <span className="text-sm font-medium text-text-secondary">{label}</span>
+          <span className="text-base font-semibold text-text-secondary">{label}</span>
         </div>
-        <div className="text-3xl font-bold text-text-primary tracking-tight">
+        <div className="text-4xl font-black text-text-primary tracking-tight">
           {formatNumber(display)}
         </div>
         {subtitle && (
-          <p className="mt-1 text-xs text-text-muted">{subtitle}</p>
+          <p className="mt-2 text-sm text-text-muted">{subtitle}</p>
         )}
       </div>
     </motion.div>

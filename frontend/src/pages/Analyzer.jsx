@@ -15,6 +15,7 @@ import {
   demoChurnResult, demoCareerResult, languages, countries, orgSizes, CLUSTER_COLORS,
 } from '../lib/demoData'
 import { predictChurn, predictCareer } from '../lib/api'
+import { useDemoMode } from '../context/DemoModeContext'
 
 /* ── Career stage from years ─────────────────────────────────────── */
 function getCareerStage(yrs) {
@@ -46,6 +47,7 @@ function StarRating({ value, onChange }) {
 
 /* ── Page ─────────────────────────────────────────────────────────── */
 export default function Analyzer() {
+  const { demoMode } = useDemoMode()
   // Form state
   const [yearsCoding, setYearsCoding] = useState(8)
   const [language, setLanguage] = useState('TypeScript')
@@ -81,34 +83,45 @@ export default function Analyzer() {
   const handleChurn = useCallback(async () => {
     setLoading('churn')
     setChurnResult(null)
+    if (demoMode) {
+      await new Promise((r) => setTimeout(r, 500))
+      setChurnResult(demoChurnResult)
+      setLoading(null)
+      return
+    }
     try {
       const res = await predictChurn(buildProfile())
       setChurnResult(res.data)
     } catch {
-      // Simulate loading delay for demo
-      await new Promise((r) => setTimeout(r, 1200))
+      await new Promise((r) => setTimeout(r, 800))
       setChurnResult(demoChurnResult)
     }
     setLoading(null)
-  }, [yearsCoding, language, orgSize, country, usesAI, satisfaction, remoteWork])
+  }, [yearsCoding, language, orgSize, country, usesAI, satisfaction, remoteWork, demoMode])
 
   const handleCareer = useCallback(async () => {
     setLoading('career')
     setCareerResult(null)
+    if (demoMode) {
+      await new Promise((r) => setTimeout(r, 500))
+      setCareerResult(demoCareerResult)
+      setLoading(null)
+      return
+    }
     try {
       const res = await predictCareer(buildProfile())
       setCareerResult(res.data)
     } catch {
-      await new Promise((r) => setTimeout(r, 1200))
+      await new Promise((r) => setTimeout(r, 800))
       setCareerResult(demoCareerResult)
     }
     setLoading(null)
-  }, [yearsCoding, language, orgSize, country, usesAI, satisfaction, remoteWork])
+  }, [yearsCoding, language, orgSize, country, usesAI, satisfaction, remoteWork, demoMode])
 
-  const selectClasses = 'w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-purple-accent/50 focus:border-purple-accent/50 transition-all appearance-none cursor-pointer'
+  const selectClasses = 'w-full bg-white/80 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-purple-accent/50 focus:border-purple-accent/50 transition-all appearance-none cursor-pointer'
 
   return (
-    <div className="pt-32 pb-16 min-h-screen">
+    <div className="pt-20 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
@@ -194,7 +207,7 @@ export default function Analyzer() {
                       <button
                         key={c}
                         onMouseDown={() => { setCountry(c); setShowCountryDropdown(false) }}
-                        className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 cursor-pointer"
+                        className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-black/[0.04] hover:bg-sky-500/8 cursor-pointer"
                       >
                         {c}
                       </button>
@@ -211,7 +224,7 @@ export default function Analyzer() {
                 <button
                   onClick={() => setUsesAI(!usesAI)}
                   className={`relative w-12 h-6 rounded-full transition-colors cursor-pointer ${
-                    usesAI ? 'bg-purple-accent' : 'bg-dark-border'
+                    usesAI ? 'bg-purple-accent' : 'bg-slate-200'
                   }`}
                 >
                   <span
@@ -253,7 +266,7 @@ export default function Analyzer() {
               </div>
 
               {/* Career Stage Badge */}
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-surface">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/40 border border-slate-200/50">
                 <Monitor className="w-4 h-4 text-purple-accent" />
                 <span className="text-sm text-text-secondary">Career Stage:</span>
                 <span className="text-sm font-semibold text-purple-accent">{stage}</span>
@@ -387,19 +400,19 @@ export default function Analyzer() {
                     </h3>
 
                     <div className="grid grid-cols-3 gap-4 mb-6">
-                      <div className="p-4 rounded-xl bg-dark-surface text-center">
+                      <div className="p-4 rounded-xl bg-white/40 border border-slate-200/50 text-center">
                         <div className="text-2xl font-bold text-success">
                           ${(careerResult.predicted_salary / 1000).toFixed(0)}K
                         </div>
                         <div className="text-xs text-text-muted mt-1">Predicted Salary</div>
                       </div>
-                      <div className="p-4 rounded-xl bg-dark-surface text-center">
+                      <div className="p-4 rounded-xl bg-white/40 border border-slate-200/50 text-center">
                         <div className="text-2xl font-bold text-purple-accent">
                           {careerResult.percentile}th
                         </div>
                         <div className="text-xs text-text-muted mt-1">Percentile</div>
                       </div>
-                      <div className="p-4 rounded-xl bg-dark-surface text-center">
+                      <div className="p-4 rounded-xl bg-white/40 border border-slate-200/50 text-center">
                         <ClusterBadge clusterId={careerResult.predicted_cluster} />
                         <div className="text-xs text-text-muted mt-2">Your Cluster</div>
                       </div>
@@ -417,10 +430,10 @@ export default function Analyzer() {
                     <h4 className="text-sm font-semibold mb-4">Your Salary vs Cluster Averages</h4>
                     <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={careerResult.comparison} barGap={4}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2a2a33" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis
                           dataKey="cluster"
-                          tick={{ fontSize: 10, fill: '#6b7280' }}
+                          tick={{ fontSize: 10, fill: '#475569' }}
                           axisLine={false}
                           tickLine={false}
                           interval={0}
@@ -428,10 +441,10 @@ export default function Analyzer() {
                           textAnchor="end"
                           height={60}
                         />
-                        <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 10, fill: '#475569' }} axisLine={false} tickLine={false} />
                         <Tooltip
-                          contentStyle={{ background: '#1a1a1f', border: '1px solid #2a2a33', borderRadius: '12px', fontSize: 12 }}
-                          labelStyle={{ color: '#f0f0f5' }}
+                          contentStyle={{ background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(16px)', border: '1.5px solid rgba(255, 255, 255, 0.8)', borderRadius: '12px', fontSize: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}
+                          labelStyle={{ color: '#0f172a', fontWeight: 'bold' }}
                         />
                         <Bar dataKey="salary" name="Cluster Avg" radius={[6, 6, 0, 0]} isAnimationActive animationDuration={800}>
                           {careerResult.comparison.map((_, i) => (

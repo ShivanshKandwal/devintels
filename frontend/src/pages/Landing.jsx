@@ -116,9 +116,9 @@ const features = [
 /* ── Page ─────────────────────────────────────────────────────────── */
 export default function Landing() {
   return (
-    <div className="relative">
+    <div className="relative bg-blueprint bg-grid-lines bg-topo">
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
         <Particles />
 
         {/* gradient orbs */}
@@ -210,7 +210,7 @@ export default function Landing() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-6 md:gap-8">
           {features.map((f, i) => (
             <motion.div
               key={f.to}
@@ -221,16 +221,16 @@ export default function Landing() {
             >
               <Link
                 to={f.to}
-                className="group block p-6 rounded-2xl glass hover:glow-purple-sm transition-all duration-300"
+                className="group block p-8 rounded-2xl glass hover:glow-purple-sm transition-all duration-300"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <f.icon className="w-6 h-6 text-text-primary" />
+                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                  <f.icon className="w-7 h-7 text-text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
                   {f.title}
-                  <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-60 transition-opacity" />
+                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-60 transition-opacity" />
                 </h3>
-                <p className="text-sm text-text-secondary leading-relaxed">{f.desc}</p>
+                <p className="text-base text-text-secondary leading-relaxed">{f.desc}</p>
               </Link>
             </motion.div>
           ))}
@@ -238,7 +238,7 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────── */}
-      <footer className="border-t border-dark-border py-8 text-center text-xs text-text-muted">
+      <footer className="border-t border-slate-200/50 py-8 text-center text-xs text-text-muted">
         <p>
           Built with React · FastAPI · XGBoost · Prophet · SBERT — {' '}
           <span className="text-text-secondary">DevIntel © {new Date().getFullYear()}</span>

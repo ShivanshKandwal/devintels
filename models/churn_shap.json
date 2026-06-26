@@ -1,0 +1,30 @@
+{
+  "global_importance": {
+    "job_sat_score": 0.3091562478544711,
+    "is_high_income_country": 0.08790432122141198,
+    "years_code_pro_num": 0.015170309008830731,
+    "is_employed": 0.015140644828133239,
+    "experience_gap": 0.012546846769408608,
+    "stack_diversity_score": 0.011411025480974427,
+    "org_size_num": 0.011086311909772373,
+    "learning_diversity": 0.008184745415330015,
+    "ai_sentiment_score": 0.008034159516621075,
+    "lang_count": 0.00802010037107488,
+    "ai_tool_count": 0.007558286759084765,
+    "collab_tool_count": 0.006855835915693585,
+    "so_engagement_score": 0.006708943807872854,
+    "db_count": 0.005661715360646627,
+    "learn_online_count": 0.005491099761908995,
+    "is_hybrid": 0.005434496964393654,
+    "platform_count": 0.00533834376461737,
+    "tool_count": 0.005176114075839585,
+    "learn_source_count": 0.0047572269729962416,
+    "is_remote": 0.003021047499527327,
+    "uses_cloud": 0.0029892210573717447,
+    "is_large_org": 0.00292659309281103,
+    "uses_python": 0.002259642423774936,
+    "uses_javascript": 0.002173697635214912,
+    "learns_online": 0.0018468078896767182,
+    "uses_ai_tools": 0.0014256194757471638
+  }
+}

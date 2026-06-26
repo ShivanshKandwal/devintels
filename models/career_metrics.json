@@ -1,0 +1,9 @@
+{
+  "rmse_log": 0.7959,
+  "mae_log": 0.5089,
+  "r2": 0.1052,
+  "rmse_dollars": 29061.52,
+  "mae_dollars": 19212.1,
+  "n_train": 12000,
+  "n_test": 3000
+}

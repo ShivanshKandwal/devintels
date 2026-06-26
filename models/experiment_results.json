@@ -1,0 +1,265 @@
+{
+  "treatment": "uses_ai_tools",
+  "n_treated": 11940,
+  "n_control": 3060,
+  "n_matched_treated": 11940,
+  "n_matched_control": 11940,
+  "pre_match_balance": [
+    {
+      "variable": "years_code_pro_num",
+      "treated_mean": 3.9732,
+      "control_mean": 3.8962,
+      "smd": 0.0137,
+      "balanced": true
+    },
+    {
+      "variable": "experience_gap",
+      "treated_mean": 2.182,
+      "control_mean": 2.1709,
+      "smd": 0.0024,
+      "balanced": true
+    },
+    {
+      "variable": "lang_count",
+      "treated_mean": 4.5023,
+      "control_mean": 4.5039,
+      "smd": 0.0009,
+      "balanced": true
+    },
+    {
+      "variable": "db_count",
+      "treated_mean": 3.0027,
+      "control_mean": 3.0193,
+      "smd": 0.0116,
+      "balanced": true
+    },
+    {
+      "variable": "stack_diversity_score",
+      "treated_mean": 14.9867,
+      "control_mean": 15.0873,
+      "smd": 0.0305,
+      "balanced": true
+    },
+    {
+      "variable": "learning_diversity",
+      "treated_mean": 5.4972,
+      "control_mean": 5.4761,
+      "smd": 0.0117,
+      "balanced": true
+    },
+    {
+      "variable": "is_remote",
+      "treated_mean": 0.2672,
+      "control_mean": 0.2719,
+      "smd": 0.0107,
+      "balanced": true
+    },
+    {
+      "variable": "org_size_num",
+      "treated_mean": 5.2108,
+      "control_mean": 5.2183,
+      "smd": 0.0035,
+      "balanced": true
+    },
+    {
+      "variable": "is_large_org",
+      "treated_mean": 0.2526,
+      "control_mean": 0.268,
+      "smd": 0.035,
+      "balanced": true
+    },
+    {
+      "variable": "ed_level_num",
+      "treated_mean": 4.5991,
+      "control_mean": 4.5984,
+      "smd": 0.0005,
+      "balanced": true
+    },
+    {
+      "variable": "is_high_income_country",
+      "treated_mean": 0.5931,
+      "control_mean": 0.5791,
+      "smd": 0.0285,
+      "balanced": true
+    },
+    {
+      "variable": "is_employed",
+      "treated_mean": 0.8326,
+      "control_mean": 0.8448,
+      "smd": 0.0331,
+      "balanced": true
+    }
+  ],
+  "post_match_balance": [
+    {
+      "variable": "years_code_pro_num",
+      "treated_mean": 3.9732,
+      "control_mean": 4.0353,
+      "smd": 0.0108,
+      "balanced": true
+    },
+    {
+      "variable": "experience_gap",
+      "treated_mean": 2.182,
+      "control_mean": 2.1099,
+      "smd": 0.0159,
+      "balanced": true
+    },
+    {
+      "variable": "lang_count",
+      "treated_mean": 4.5023,
+      "control_mean": 4.5008,
+      "smd": 0.0008,
+      "balanced": true
+    },
+    {
+      "variable": "db_count",
+      "treated_mean": 3.0027,
+      "control_mean": 2.9843,
+      "smd": 0.0129,
+      "balanced": true
+    },
+    {
+      "variable": "stack_diversity_score",
+      "treated_mean": 14.9867,
+      "control_mean": 15.0036,
+      "smd": 0.0052,
+      "balanced": true
+    },
+    {
+      "variable": "learning_diversity",
+      "treated_mean": 5.4972,
+      "control_mean": 5.4528,
+      "smd": 0.0246,
+      "balanced": true
+    },
+    {
+      "variable": "is_remote",
+      "treated_mean": 0.2672,
+      "control_mean": 0.275,
+      "smd": 0.0177,
+      "balanced": true
+    },
+    {
+      "variable": "org_size_num",
+      "treated_mean": 5.2108,
+      "control_mean": 5.2534,
+      "smd": 0.0202,
+      "balanced": true
+    },
+    {
+      "variable": "is_large_org",
+      "treated_mean": 0.2526,
+      "control_mean": 0.2609,
+      "smd": 0.019,
+      "balanced": true
+    },
+    {
+      "variable": "ed_level_num",
+      "treated_mean": 4.5991,
+      "control_mean": 4.5741,
+      "smd": 0.0165,
+      "balanced": true
+    },
+    {
+      "variable": "is_high_income_country",
+      "treated_mean": 0.5931,
+      "control_mean": 0.5965,
+      "smd": 0.0068,
+      "balanced": true
+    },
+    {
+      "variable": "is_employed",
+      "treated_mean": 0.8326,
+      "control_mean": 0.8272,
+      "smd": 0.0143,
+      "balanced": true
+    }
+  ],
+  "hypothesis_tests": [
+    {
+      "outcome": "job_sat_score",
+      "treated_mean": 3.6544,
+      "control_mean": 3.6523,
+      "effect_size": 0.002,
+      "n_treated": 11940,
+      "n_control": 11940,
+      "bonferroni_alpha": 0.0125,
+      "test_ttest": {
+        "statistic": 0.139,
+        "p_value": 0.889482,
+        "significant": false
+      },
+      "test_mannwhitney": {
+        "statistic": 71597431.5,
+        "p_value": 0.521705,
+        "significant": false
+      },
+      "test": "ttest+mannwhitney",
+      "p_value": 0.521705,
+      "significant": false,
+      "cohens_d": 0.0018
+    },
+    {
+      "outcome": "is_high_earner",
+      "treated_mean": 0.1415,
+      "control_mean": 0.1395,
+      "effect_size": 0.002,
+      "n_treated": 11940,
+      "n_control": 11940,
+      "bonferroni_alpha": 0.0125,
+      "test": "chi-square",
+      "statistic": 0.1834,
+      "p_value": 0.668465,
+      "significant": false,
+      "cohens_d": 0.0058
+    },
+    {
+      "outcome": "so_engagement_score",
+      "treated_mean": 3.1436,
+      "control_mean": 3.1379,
+      "effect_size": 0.0056,
+      "n_treated": 11940,
+      "n_control": 11940,
+      "bonferroni_alpha": 0.0125,
+      "test_ttest": {
+        "statistic": 0.303,
+        "p_value": 0.761876,
+        "significant": false
+      },
+      "test_mannwhitney": {
+        "statistic": 71361018.5,
+        "p_value": 0.879171,
+        "significant": false
+      },
+      "test": "ttest+mannwhitney",
+      "p_value": 0.761876,
+      "significant": false,
+      "cohens_d": 0.0039
+    },
+    {
+      "outcome": "stack_diversity_score",
+      "treated_mean": 14.9867,
+      "control_mean": 15.0036,
+      "effect_size": -0.0169,
+      "n_treated": 11940,
+      "n_control": 11940,
+      "bonferroni_alpha": 0.0125,
+      "test_ttest": {
+        "statistic": -0.4026,
+        "p_value": 0.687213,
+        "significant": false
+      },
+      "test_mannwhitney": {
+        "statistic": 71253434.5,
+        "p_value": 0.957353,
+        "significant": false
+      },
+      "test": "ttest+mannwhitney",
+      "p_value": 0.687213,
+      "significant": false,
+      "cohens_d": -0.0052
+    }
+  ],
+  "uplift_model": null
+}

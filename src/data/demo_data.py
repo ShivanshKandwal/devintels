@@ -328,9 +328,12 @@ def generate_demo_data(
     """
     rng = np.random.default_rng(seed)
     records: list[dict[str, Any]] = []
+    
+    # Normalize country weights to sum to exactly 1.0
+    countries_w_norm = [w / sum(COUNTRIES_W) for w in COUNTRIES_W]
 
     for i in range(1, n_rows + 1):
-        country = rng.choice(COUNTRIES, p=COUNTRIES_W)
+        country = rng.choice(COUNTRIES, p=countries_w_norm)
         employment = rng.choice(EMPLOYMENT, p=EMPLOYMENT_W)
         is_employed = employment.startswith("Employed") or "contractor" in employment.lower()
 

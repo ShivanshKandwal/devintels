@@ -7,6 +7,7 @@ import Landscape from './pages/Landscape'
 import Analyzer from './pages/Analyzer'
 import Forecast from './pages/Forecast'
 import Tribe from './pages/Tribe'
+import { DemoModeProvider } from './context/DemoModeContext'
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
@@ -67,13 +68,15 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <HashRouter>
-      <div className="min-h-screen bg-dark-bg text-text-primary">
-        <Navbar />
-        <ErrorBoundary>
-          <AnimatedRoutes />
-        </ErrorBoundary>
-      </div>
-    </HashRouter>
+    <DemoModeProvider>
+      <HashRouter>
+        <div className="min-h-screen bg-transparent text-text-primary">
+          <Navbar />
+          <ErrorBoundary>
+            <AnimatedRoutes />
+          </ErrorBoundary>
+        </div>
+      </HashRouter>
+    </DemoModeProvider>
   )
 }

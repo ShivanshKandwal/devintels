@@ -4,7 +4,7 @@ const BASE = import.meta.env.VITE_API_URL || 'https://devintel-backend.onrender.
 
 const client = axios.create({
   baseURL: BASE,
-  timeout: 15000,
+  timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 })
 

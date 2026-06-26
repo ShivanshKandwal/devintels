@@ -149,6 +149,9 @@ def _run_shap_analysis(
     if isinstance(shap_values, list):
         # Binary classification — use class-1 SHAP values
         shap_values = shap_values[1]
+    elif isinstance(shap_values, np.ndarray) and len(shap_values.shape) == 3:
+        # Binary classification (samples, features, classes) — use class-1
+        shap_values = shap_values[:, :, 1]
 
     # Global importances
     mean_abs_shap = np.abs(shap_values).mean(axis=0)

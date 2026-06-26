@@ -37,7 +37,7 @@ export default function ShapWaterfall({ values = [] }) {
                   />
                 </div>
               )}
-              <div className="w-px h-6 bg-dark-border flex-shrink-0" />
+              <div className="w-px h-6 bg-slate-300 flex-shrink-0" />
               {isPositive && (
                 <div className="flex-1">
                   <motion.div
@@ -59,7 +59,7 @@ export default function ShapWaterfall({ values = [] }) {
         )
       })}
 
-      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-dark-border">
+      <div className="flex items-center gap-4 mt-3 pt-3 border-t border-slate-200">
         <div className="flex items-center gap-1.5 text-xs text-text-muted">
           <div className="w-3 h-3 rounded-sm" style={{ background: '#10b981' }} />
           Reduces Risk

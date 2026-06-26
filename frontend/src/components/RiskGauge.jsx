@@ -57,7 +57,7 @@ export default function RiskGauge({ probability = 0, size = 220 }) {
         <RadialBar
           dataKey="value"
           cornerRadius={6}
-          background={{ fill: '#1a1a1f' }}
+          background={{ fill: 'rgba(14, 165, 233, 0.1)' }}
           angleAxisId={0}
         />
       </RadialBarChart>

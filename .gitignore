@@ -9,10 +9,14 @@ __pycache__/
 data/raw/
 data/processed/*.parquet
 data/features/*.parquet
+!data/features/demo_survey_2024_features.parquet
 
 # Model artifacts
 models/*.pkl
+!models/churn_xgb.pkl
+!models/career_value_xgb.pkl
 models/*.index
+!models/faiss.index
 models/*.bin
 
 # MLflow

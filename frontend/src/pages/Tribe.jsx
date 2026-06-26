@@ -7,26 +7,34 @@ import ClusterBadge from '../components/ClusterBadge'
 import { demoSimilarDevs, CLUSTER_COLORS, CLUSTER_NAMES } from '../lib/demoData'
 import { searchSimilar } from '../lib/api'
 import SkeletonLoader from '../components/SkeletonLoader'
+import { useDemoMode } from '../context/DemoModeContext'
 
 /* ── Page ─────────────────────────────────────────────────────────── */
 export default function Tribe() {
   const [query, setQuery] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const { demoMode } = useDemoMode()
 
   const handleSearch = useCallback(async () => {
     if (!query.trim()) return
     setLoading(true)
     setResult(null)
+    if (demoMode) {
+      await new Promise((r) => setTimeout(r, 700))
+      setResult(demoSimilarDevs)
+      setLoading(false)
+      return
+    }
     try {
       const res = await searchSimilar(query)
       setResult(res.data)
     } catch {
-      await new Promise((r) => setTimeout(r, 1400))
+      await new Promise((r) => setTimeout(r, 1000))
       setResult(demoSimilarDevs)
     }
     setLoading(false)
-  }, [query])
+  }, [query, demoMode])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -36,7 +44,7 @@ export default function Tribe() {
   }
 
   return (
-    <div className="pt-32 pb-16 min-h-screen">
+    <div className="pt-20 pb-16 min-h-screen">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -68,7 +76,7 @@ export default function Tribe() {
               onKeyDown={handleKeyDown}
               rows={4}
               placeholder="I'm a senior full-stack developer with 8 years of experience, primarily working with TypeScript, React, and Node.js. I work remotely for a mid-size startup and recently started using AI coding tools like GitHub Copilot..."
-              className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-muted/50 resize-none focus:outline-none focus:ring-2 focus:ring-purple-accent/50 focus:border-purple-accent/50 transition-all"
+              className="w-full bg-white/80 border border-slate-200 rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-muted/50 resize-none focus:outline-none focus:ring-2 focus:ring-purple-accent/50 focus:border-purple-accent/50 transition-all"
             />
             <div className="flex items-center justify-between mt-4">
               <span className="text-xs text-text-muted">
@@ -121,7 +129,7 @@ export default function Tribe() {
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-text-muted">Match Score:</span>
-                      <div className="flex-1 max-w-[200px] h-2 bg-dark-border rounded-full overflow-hidden">
+                      <div className="flex-1 max-w-[200px] h-2 bg-slate-200 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${result.your_cluster.match_score * 100}%` }}
@@ -147,7 +155,7 @@ export default function Tribe() {
                   {result.cluster_scores.map((cs, i) => (
                     <div key={cs.name} className="flex items-center gap-3">
                       <span className="text-xs text-text-secondary w-40 truncate">{cs.name}</span>
-                      <div className="flex-1 h-3 bg-dark-border rounded-full overflow-hidden">
+                      <div className="flex-1 h-3 bg-slate-200 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${cs.score * 100}%` }}
@@ -177,7 +185,7 @@ export default function Tribe() {
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.3 + i * 0.1 }}
-                      className="flex items-center gap-4 p-4 rounded-xl bg-dark-surface hover:bg-white/[0.03] transition-colors"
+                      className="flex items-center gap-4 p-4 rounded-xl bg-white/40 border border-slate-200/50 hover:bg-black/[0.01] transition-colors"
                     >
                       {/* Rank */}
                       <div className="w-8 h-8 rounded-lg bg-purple-accent/10 flex items-center justify-center text-sm font-bold text-purple-accent flex-shrink-0">
@@ -207,7 +215,7 @@ export default function Tribe() {
 
                       {/* Similarity */}
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <div className="w-20 h-2 bg-dark-border rounded-full overflow-hidden">
+                        <div className="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${dev.similarity * 100}%` }}

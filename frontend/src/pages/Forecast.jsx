@@ -9,6 +9,7 @@ import TechPill from '../components/TechPill'
 import { forecastData as demoForecastData, techCategories, TECH_COLORS } from '../lib/demoData'
 import { getForecast } from '../lib/api'
 import { useEffect } from 'react'
+import { useDemoMode } from '../context/DemoModeContext'
 
 /* ── Custom chart tooltip ────────────────────────────────────────── */
 function ChartTooltip({ active, payload, label }) {
@@ -35,6 +36,7 @@ export default function Forecast() {
   const [selectedTechs, setSelectedTechs] = useState(['Python', 'JavaScript', 'TypeScript', 'Rust'])
   const [loadedForecasts, setLoadedForecasts] = useState(demoForecastData)
   const [queriedTechs, setQueriedTechs] = useState([])
+  const { demoMode } = useDemoMode()
 
   const categories = Object.keys(techCategories)
 
@@ -44,24 +46,40 @@ export default function Forecast() {
     )
   }
 
-  // Fetch forecast from API for selected technologies
+  // Reset queried techs when demoMode changes to reload from the correct source
+  useEffect(() => {
+    setQueriedTechs([])
+  }, [demoMode])
+
+  // Fetch forecast from API or use demo data depending on Demo Mode
   useEffect(() => {
     selectedTechs.forEach((tech) => {
       if (!queriedTechs.includes(tech)) {
         setQueriedTechs((prev) => [...prev, tech])
-        getForecast(tech)
-          .then((res) => {
-            setLoadedForecasts((prev) => ({
-              ...prev,
-              [tech]: res.data.forecast,
-            }))
-          })
-          .catch((err) => {
-            console.warn(`Failed to fetch forecast for ${tech}, using demo data.`, err.message)
-          })
+        if (demoMode) {
+          setLoadedForecasts((prev) => ({
+            ...prev,
+            [tech]: demoForecastData[tech],
+          }))
+        } else {
+          getForecast(tech)
+            .then((res) => {
+              setLoadedForecasts((prev) => ({
+                ...prev,
+                [tech]: res.data.forecast,
+              }))
+            })
+            .catch((err) => {
+              console.warn(`Failed to fetch forecast for ${tech}, using demo data.`, err.message)
+              setLoadedForecasts((prev) => ({
+                ...prev,
+                [tech]: demoForecastData[tech],
+              }))
+            })
+        }
       }
     })
-  }, [selectedTechs, queriedTechs])
+  }, [selectedTechs, queriedTechs, demoMode])
 
   // Merge data for chart: { year, Python, JavaScript, ... }
   const chartData = useMemo(() => {
@@ -98,7 +116,7 @@ export default function Forecast() {
   }, [loadedForecasts])
 
   return (
-    <div className="pt-32 pb-16 min-h-screen">
+    <div className="pt-20 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
@@ -161,15 +179,15 @@ export default function Forecast() {
           ) : (
             <ResponsiveContainer width="100%" height={420}>
               <LineChart data={chartData} margin={{ top: 10, right: 30, bottom: 10, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a33" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis
                   dataKey="year"
-                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  tick={{ fontSize: 12, fill: '#475569' }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: '#9ca3af' }}
+                  tick={{ fontSize: 12, fill: '#475569' }}
                   axisLine={false}
                   tickLine={false}
                   domain={[0, 'auto']}
@@ -224,7 +242,7 @@ export default function Forecast() {
                       stroke={color}
                       strokeWidth={2.5}
                       dot={{ r: 4, fill: color, strokeWidth: 0 }}
-                      activeDot={{ r: 6, strokeWidth: 2, stroke: '#0f0f11' }}
+                      activeDot={{ r: 6, strokeWidth: 2, stroke: '#ffffff' }}
                       isAnimationActive={true}
                       animationDuration={1200}
                       connectNulls

@@ -95,7 +95,7 @@ export default function Landscape() {
   }
 
   return (
-    <div className="pt-32 pb-16 min-h-screen">
+    <div className="pt-20 pb-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -132,17 +132,25 @@ export default function Landscape() {
             {profiles.map((c) => {
               const active = selectedCluster === c.id
               return (
-                <motion.button
+                <motion.div
                   key={c.id}
                   onClick={() => setSelectedCluster(active ? null : c.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedCluster(active ? null : c.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full text-left p-5 rounded-2xl glass transition-all duration-300 cursor-pointer mb-4 hover:scale-[1.01] ${
-                    active ? 'glow-purple border-purple-accent/60 bg-purple-accent/5' : 'border-white/5 hover:bg-white/5'
+                  className={`w-full text-left p-5 rounded-2xl glass transition-all duration-300 cursor-pointer mb-4 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-accent/50 ${
+                    active ? 'glow-purple border-purple-accent/60 bg-purple-accent/5' : 'border-slate-200/50 hover:bg-black/[0.01]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-3">
                     <ClusterBadge clusterId={c.id} />
-                    <span className="text-xs font-semibold font-mono text-text-secondary bg-white/5 px-2.5 py-1 rounded-md">{c.count.toLocaleString()}</span>
+                    <span className="text-xs font-semibold font-mono text-text-secondary bg-black/[0.04] px-2.5 py-1 rounded-md">{c.count.toLocaleString()}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs mb-4 text-text-secondary">
                     <div className="flex items-center gap-1.5">
@@ -154,12 +162,12 @@ export default function Landscape() {
                       <span><strong className="text-text-primary text-sm">{c.avgExperience}</strong> yrs exp</span>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-200/50">
                     {c.topTechs.slice(0, 3).map((t) => (
                       <TechPill key={t} name={t} selected={false} className="opacity-90 hover:opacity-100" />
                     ))}
                   </div>
-                </motion.button>
+                </motion.div>
               )
             })}
           </motion.div>
@@ -250,7 +258,7 @@ export default function Landscape() {
           <div className="rounded-2xl glass overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-dark-border text-text-secondary text-xs uppercase tracking-wider">
+                <tr className="border-b border-slate-200/50 text-text-secondary text-xs uppercase tracking-wider">
                   {[
                     { key: 'name', label: 'Cluster' },
                     { key: 'count', label: 'Size' },
@@ -281,7 +289,7 @@ export default function Landscape() {
                 {sorted.map((c) => (
                   <tr
                     key={c.id}
-                    className="border-b border-dark-border/50 hover:bg-white/[0.02] transition-colors"
+                    className="border-b border-slate-200/50 hover:bg-black/[0.01] transition-colors"
                   >
                     <td className="px-4 py-3">
                       <ClusterBadge clusterId={c.id} />
