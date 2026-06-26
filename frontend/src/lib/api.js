@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const BASE = import.meta.env.VITE_API_URL || 'https://devintel-backend.onrender.com'
 
 const client = axios.create({
   baseURL: BASE,
