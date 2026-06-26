@@ -44,8 +44,7 @@ export default function Tribe() {
   }
 
   return (
-    <div className="pt-20 pb-16 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="max-w-4xl mx-auto space-y-8 text-left pb-16">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -255,7 +254,6 @@ export default function Tribe() {
             </p>
           </motion.div>
         )}
-      </div>
     </div>
   )
 }

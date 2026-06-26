@@ -1,156 +1,63 @@
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
 
-:root {
-  --color-bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 100%);
-  --color-card: rgba(255, 255, 255, 0.72);
-  --color-border: rgba(14, 165, 233, 0.16);
-  --color-surface: rgba(255, 255, 255, 0.55);
-  --color-sky-accent: #0ea5e9;
-  --color-pink-accent: #ec4899;
-  --color-sky-glow: rgba(14, 165, 233, 0.1);
+@theme {
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --color-purple-accent: #0ea5e9;
+  --color-purple-light: #ec4899;
+  --color-purple-dark: #0284c7;
   --color-text-primary: #0f172a;
   --color-text-secondary: #334155;
   --color-text-muted: #64748b;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  
-  /* Responsive root font sizing */
-  font-size: 16px;
 }
 
-@media (min-width: 768px) {
-  :root {
-    font-size: 17px;
-  }
-}
-
-@media (min-width: 1024px) {
-  :root {
-    font-size: 18px;
-  }
-}
-
-@media (min-width: 1440px) {
-  :root {
-    font-size: 19px;
-  }
-}
-
-@media (min-width: 1920px) {
-  :root {
-    font-size: 20px;
-  }
-}
-
-@media (min-width: 2560px) {
-  :root {
-    font-size: 22px;
-  }
-}
-
-@theme {
-  --color-dark-bg: transparent;
-  --color-dark-card: var(--color-card);
-  --color-dark-border: var(--color-border);
-  --color-dark-surface: var(--color-surface);
-  --color-purple-accent: var(--color-sky-accent);
-  --color-purple-glow: var(--color-sky-glow);
-  --color-purple-light: var(--color-pink-accent);
-  --color-purple-dark: #0284c7;
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
-  --color-text-muted: var(--color-text-muted);
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-danger: var(--color-danger);
-  --font-sans: var(--font-sans);
-}
-
-/* Explicit layout fallbacks to prevent screen stretching and force centering */
-.max-w-7xl {
-  max-width: 86rem !important; /* expanded for more width on wide viewports */
-}
-.max-w-6xl {
-  max-width: 78rem !important;
-}
-.max-w-4xl {
-  max-width: 62rem !important;
-}
-.mx-auto {
-  margin-left: auto !important;
-  margin-right: auto !important;
-  margin-inline: auto !important;
-}
-
-/* Blueprint dot-grid overlay background */
-.bg-blueprint {
-  background-image: radial-gradient(rgba(14, 165, 233, 0.12) 1.5px, transparent 1.5px) !important;
-  background-size: 28px 28px !important;
-}
-
-/* Linear coordinates fine grid overlay */
-.bg-grid-lines {
-  background-image: 
-    linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px) !important;
-  background-size: 56px 56px !important;
-}
-
-/* Topographic contour rings — adds organic depth */
-.bg-topo {
-  background-image:
-    radial-gradient(ellipse 600px 400px at 20% 30%, rgba(236, 72, 153, 0.05) 0%, rgba(236, 72, 153, 0.01) 40%, transparent 70%),
-    radial-gradient(ellipse 500px 500px at 75% 60%, rgba(14, 165, 233, 0.05) 0%, rgba(14, 165, 233, 0.01) 45%, transparent 70%) !important;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif !important;
-  background-image: var(--color-bg-gradient) !important;
-  background-attachment: fixed !important;
-  color: var(--color-text-primary) !important;
-  min-height: 100vh;
+:root {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  background: linear-gradient(135deg, #E0F2FE 0%, #EDE9FE 25%, #FCE7F3 50%, #FEF3C7 75%, #CCFBF1 100%);
+  color: #1E293B;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.6;
   background: transparent;
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-sky-accent);
+  background: rgba(15, 23, 42, 0.25);
 }
 
-/* Glassmorphism utility with subtle light gradients and shadows */
+/* Premium Light-Theme Glass Cards */
 .glass {
-  background: rgba(255, 255, 255, 0.68) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.8) !important; /* Thick premium border like DataScienceDev */
-  box-shadow: 0 10px 30px 0 rgba(14, 165, 233, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 10px 35px 0 rgba(31, 38, 135, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.6) !important;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -166,6 +73,46 @@ body {
   -webkit-backdrop-filter: blur(30px) !important;
   border: 1.5px solid rgba(255, 255, 255, 0.9) !important;
   box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Blueprint dot-grid overlay background */
+.bg-blueprint {
+  background-image: radial-gradient(rgba(14, 165, 233, 0.12) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
+}
+
+/* Linear coordinates fine grid overlay */
+.bg-grid-lines {
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Topographic contour rings — adds organic depth */
+.bg-topo {
+  background-image:
+    radial-gradient(ellipse 600px 400px at 20% 30%, rgba(236, 72, 153, 0.05) 0%, rgba(236, 72, 153, 0.01) 40%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 75% 60%, rgba(14, 165, 233, 0.05) 0%, rgba(14, 165, 233, 0.01) 45%, transparent 70%) !important;
+}
+
+/* Diagonal crosshatch pattern for engineering aesthetic */
+.bg-crosshatch {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 80px,
+      rgba(14, 165, 233, 0.02) 80px,
+      rgba(14, 165, 233, 0.02) 81px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      rgba(236, 72, 153, 0.02) 80px,
+      rgba(236, 72, 153, 0.02) 81px
+    );
 }
 
 /* Premium gradient buttons with sky-blue and pink themes */
@@ -200,16 +147,97 @@ body {
   box-shadow: 0 0 15px rgba(236, 72, 153, 0.15) !important;
 }
 
+/* Floating abstract vector animations */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(8deg); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float-slow {
+  animation: float-slow 16s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 60s linear infinite;
+  transform-origin: center;
+}
+
+/* Background animated glow blobs (Bold, saturated) */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.8;
+  mix-blend-mode: multiply;
+  will-change: transform;
+  pointer-events: none;
+}
+
+@keyframes float-blob-1 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(90px, -110px) scale(1.2); }
+  66% { transform: translate(-45px, 60px) scale(0.85); }
+}
+@keyframes float-blob-2 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-110px, 90px) scale(1.15); }
+}
+@keyframes float-blob-3 {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  40% { transform: translate(60px, 110px) scale(0.9); }
+}
+
+.blob-purple {
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.9) 0%, rgba(192, 132, 252, 0) 65%);
+  animation: float-blob-1 22s infinite ease-in-out;
+}
+.blob-indigo {
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.85) 0%, rgba(129, 140, 248, 0) 65%);
+  animation: float-blob-2 25s infinite ease-in-out;
+}
+.blob-pink {
+  background: radial-gradient(circle, rgba(251, 146, 180, 0.85) 0%, rgba(251, 146, 180, 0) 65%);
+  animation: float-blob-3 20s infinite ease-in-out;
+}
+.blob-cyan {
+  background: radial-gradient(circle, rgba(103, 232, 249, 0.8) 0%, rgba(103, 232, 249, 0) 65%);
+  animation: float-blob-1 28s infinite ease-in-out;
+}
+
+/* Glow spotlight */
+.cursor-glow {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  filter: blur(95px);
+  opacity: 0.35;
+  transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Selection highlight */
+::selection {
+  background: rgba(14, 165, 233, 0.25);
+  color: #0f172a;
+}
+
 /* Spacing and modern paddings for all tables */
 table {
   border-collapse: separate !important;
-  border-spacing: 0 6px !important; /* spacing between rows */
+  border-spacing: 0 6px !important;
   width: 100% !important;
 }
 
 th {
   padding: 14px 20px !important;
-  color: var(--color-text-secondary) !important;
+  color: #475569 !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.075em !important;
@@ -228,7 +256,7 @@ td {
 tr:hover td {
   background: rgba(14, 165, 233, 0.05) !important;
   border-color: rgba(14, 165, 233, 0.12) !important;
-  color: var(--color-text-primary) !important;
+  color: #0f172a !important;
 }
 
 td:first-child {
@@ -243,13 +271,6 @@ td:last-child {
   border-bottom-right-radius: 12px !important;
 }
 
-/* Card layout padding and spacing updates */
-.cluster-card-btn {
-  margin-bottom: 12px !important;
-  padding: 18px !important;
-  border-radius: 16px !important;
-}
-
 /* Modern inputs with outline glows */
 input[type="range"] {
   height: 6px !important;
@@ -262,25 +283,14 @@ select, input[type="text"], textarea {
   padding: 12px 16px !important;
   border: 1px solid rgba(14, 165, 233, 0.15) !important;
   background-color: rgba(255, 255, 255, 0.8) !important;
-  color: var(--color-text-primary) !important;
+  color: #0f172a !important;
   transition: all 0.3s ease !important;
   font-family: inherit !important;
 }
 
 select:focus, input[type="text"]:focus, textarea:focus {
-  border-color: var(--color-sky-accent) !important;
+  border-color: #0ea5e9;
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2) !important;
-}
-
-/* Selection highlight */
-::selection {
-  background: rgba(14, 165, 233, 0.25);
-  color: var(--color-text-primary);
-}
-
-/* Font family enforces */
-h1, h2, h3, h4, h5, h6, span, p, div, button, table, input, select, textarea {
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif !important;
 }
 
 /* Gradient shift animation */
@@ -305,26 +315,9 @@ h1, h2, h3, h4, h5, h6, span, p, div, button, table, input, select, textarea {
   animation: float 5s ease-in-out infinite;
 }
 
-/* Global Font Size Scaling for readability */
-.text-xs {
-  font-size: 0.85rem !important; /* ~13.6px */
-}
-.text-sm {
-  font-size: 0.95rem !important; /* ~15.2px */
-}
-.text-base {
-  font-size: 1.05rem !important; /* ~16.8px */
-}
-.text-lg {
-  font-size: 1.25rem !important; /* ~20px */
-}
-.text-xl {
-  font-size: 1.45rem !important; /* ~23px */
-}
-
 /* Focus Ring Overrides to prevent text clipping */
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid var(--color-sky-accent) !important;
+  outline: 2px solid #0ea5e9 !important;
   outline-offset: 4px !important;
   border-radius: 8px !important;
 }

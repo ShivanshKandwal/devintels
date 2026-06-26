@@ -113,10 +113,9 @@ const features = [
   },
 ]
 
-/* ── Page ─────────────────────────────────────────────────────────── */
 export default function Landing() {
   return (
-    <div className="relative bg-blueprint bg-grid-lines bg-topo">
+    <div className="relative space-y-16 pb-16">
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
         <Particles />

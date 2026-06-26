@@ -95,8 +95,7 @@ export default function Landscape() {
   }
 
   return (
-    <div className="pt-20 pb-16 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="space-y-8 w-full text-left pb-16">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -315,7 +314,6 @@ export default function Landscape() {
             Click column headers to sort. Cluster sizes represent developer counts from the dataset.
           </div>
         </motion.div>
-      </div>
     </div>
   )
 }

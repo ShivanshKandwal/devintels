@@ -116,8 +116,7 @@ export default function Forecast() {
   }, [loadedForecasts])
 
   return (
-    <div className="pt-20 pb-16 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="space-y-8 w-full text-left pb-16">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Technology Forecast</h1>
@@ -322,7 +321,6 @@ export default function Forecast() {
           <Info className="w-3.5 h-3.5" />
           Forecasts (2025–2026) generated using Prophet time-series models. Shaded region indicates confidence interval.
         </div>
-      </div>
     </div>
   )
 }
