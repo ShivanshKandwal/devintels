@@ -295,32 +295,16 @@ async def lifespan(app: FastAPI):
                 
                 def get_ui_cluster_info(row):
                     row_dict = row.to_dict()
-                    is_low_level = False
-                    is_frontend = False
-                    for k, v in row_dict.items():
-                        if k.startswith("LanguageHaveWorkedWith__") and v > 0.5:
-                            lang = k.replace("LanguageHaveWorkedWith__", "").lower()
-                            if lang in ("c_plus_plus", "c", "rust", "assembly"):
-                                is_low_level = True
-                            elif lang in ("html_css", "css", "typescript", "javascript"):
-                                is_frontend = True
-
-                    uses_python = row_dict.get("uses_python", 0.0) > 0.5
-                    uses_js = row_dict.get("uses_javascript", 0.0) > 0.5 or is_frontend
-                    uses_cloud = row_dict.get("uses_cloud", 0.0) > 0.5
-                    uses_ai = row_dict.get("uses_ai_tools", 0.0) > 0.5
-                    years = row_dict.get("years_code_pro_num", 5.0)
-
-                    if is_low_level:
-                        return 4, "Systems & Embedded"
-                    elif uses_python and (uses_ai or row_dict.get("is_ai_ml_developer", 0.0) > 0.5):
-                        return 1, "Data & ML Engineers"
-                    elif uses_cloud and years >= 8.0:
-                        return 2, "Cloud-Native DevOps"
-                    elif uses_js and not uses_python:
-                        return 3, "Frontend Craftsmen"
-                    else:
-                        return 0, "Full-Stack Architects"
+                    cid = int(row_dict.get("cluster_id", -1))
+                    
+                    # Look up the profile name assigned by the HDBSCAN segmentation pipeline
+                    cluster_name = "Full-Stack Generalists"
+                    if cid in real_profiles_map:
+                        cluster_name = real_profiles_map[cid].get("name", "Full-Stack Generalists")
+                        
+                    # Map the mathematical cluster name to one of the 5 UI clusters
+                    ui_cid, ui_cname = map_real_cluster_to_ui_cluster(cluster_name, row_dict)
+                    return ui_cid, ui_cname
                 
                 ui_info = df_merged.apply(get_ui_cluster_info, axis=1)
                 df_merged["ui_cluster_id"] = [x[0] for x in ui_info]
