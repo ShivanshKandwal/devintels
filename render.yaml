@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: devintel-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free

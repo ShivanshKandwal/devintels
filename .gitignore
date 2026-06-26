@@ -1,0 +1,45 @@
+# Environment
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+
+# Data (raw data too large for git)
+data/raw/
+data/processed/*.parquet
+data/features/*.parquet
+
+# Model artifacts
+models/*.pkl
+models/*.index
+models/*.bin
+
+# MLflow
+mlruns/
+mlflow/
+
+# Monitoring reports
+monitoring/*.html
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+cSoftwaredevintelsfrontend/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+
