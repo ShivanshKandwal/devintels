@@ -104,28 +104,27 @@ def map_profile_to_features(profile: ProfileInput) -> dict:
     return feats
 
 def map_real_cluster_to_ui_cluster(cluster_name: str, user_features: dict) -> tuple[int, str]:
-    # Check features directly first
+    # Check features directly first with lower thresholds to accommodate both binary inputs and cluster averages
     is_low_level = False
     is_frontend = False
     for k, v in user_features.items():
-        if k.startswith("LanguageHaveWorkedWith__") and v > 0.5:
+        if k.startswith("LanguageHaveWorkedWith__") and v > 0.25:
             lang = k.replace("LanguageHaveWorkedWith__", "").lower()
             if lang in ("c_plus_plus", "c", "rust", "assembly"):
                 is_low_level = True
             elif lang in ("html_css", "css", "typescript", "javascript"):
                 is_frontend = True
 
-    uses_python = user_features.get("uses_python", 0.0) > 0.5
-    uses_js = user_features.get("uses_javascript", 0.0) > 0.5 or is_frontend
-    uses_cloud = user_features.get("uses_cloud", 0.0) > 0.5
-    uses_ai = user_features.get("uses_ai_tools", 0.0) > 0.5
-    years = user_features.get("years_code_pro_num", 5.0)
+    uses_python = user_features.get("uses_python", 0.0) > 0.35
+    uses_js = user_features.get("uses_javascript", 0.0) > 0.35 or is_frontend
+    uses_cloud = user_features.get("uses_cloud", 0.0) > 0.30
+    uses_ai = user_features.get("uses_ai_tools", 0.0) > 0.45
 
     if is_low_level:
         return 4, "Systems & Embedded"
-    elif uses_python and (uses_ai or user_features.get("is_ai_ml_developer", 0.0) > 0.5):
+    elif uses_python and (uses_ai or user_features.get("is_ai_ml_developer", 0.0) > 0.35):
         return 1, "Data & ML Engineers"
-    elif uses_cloud and years >= 8.0:
+    elif uses_cloud:
         return 2, "Cloud-Native DevOps"
     elif uses_js and not uses_python:
         return 3, "Frontend Craftsmen"
@@ -293,18 +292,17 @@ async def lifespan(app: FastAPI):
                 
                 real_profiles_map = {p["cluster_id"]: p for p in app.state.cluster_profiles}
                 
+                # Precompute the UI cluster mapping for each HDBSCAN cluster once based on its profile averages
+                cluster_to_ui_map = {}
+                for cid, prof in real_profiles_map.items():
+                    ui_cid, ui_cname = map_real_cluster_to_ui_cluster(prof.get("name", ""), prof)
+                    cluster_to_ui_map[cid] = (ui_cid, ui_cname)
+                
                 def get_ui_cluster_info(row):
-                    row_dict = row.to_dict()
-                    cid = int(row_dict.get("cluster_id", -1))
-                    
-                    # Look up the profile name assigned by the HDBSCAN segmentation pipeline
-                    cluster_name = "Full-Stack Generalists"
-                    if cid in real_profiles_map:
-                        cluster_name = real_profiles_map[cid].get("name", "Full-Stack Generalists")
-                        
-                    # Map the mathematical cluster name to one of the 5 UI clusters
-                    ui_cid, ui_cname = map_real_cluster_to_ui_cluster(cluster_name, row_dict)
-                    return ui_cid, ui_cname
+                    cid = int(row.get("cluster_id", -1))
+                    if cid in cluster_to_ui_map:
+                        return cluster_to_ui_map[cid]
+                    return 0, "Full-Stack Architects"
                 
                 ui_info = df_merged.apply(get_ui_cluster_info, axis=1)
                 df_merged["ui_cluster_id"] = [x[0] for x in ui_info]
@@ -594,7 +592,7 @@ def predict_career(profile: ProfileInput):
         
         if app.state.cluster_profiles:
             real_cluster = assign_cluster_by_centroid(feats, app.state.cluster_profiles)
-            ui_cluster_id, cluster_name = map_real_cluster_to_ui_cluster(real_cluster.get("name", ""), feats)
+            ui_cluster_id, cluster_name = map_real_cluster_to_ui_cluster(real_cluster.get("name", ""), real_cluster)
             
         # 4. Generate career trajectory dynamically using the XGBoost model
         trajectory = []
@@ -618,14 +616,28 @@ def predict_career(profile: ProfileInput):
                 "salary": round(trajectory_sal, 2)
             })
             
-        # 5. Comparison block
+        # 5. Comparison block - dynamically adjust averages by country group to keep visual scales consistent
+        is_high_income = feats.get("is_high_income_country", 1.0)
+        cluster_averages_high = {
+            "Full-Stack Architects": 128500.0,
+            "Data & ML Engineers": 142000.0,
+            "Cloud-Native DevOps": 135000.0,
+            "Frontend Craftsmen": 115000.0,
+            "Systems & Embedded": 132000.0
+        }
+        cluster_averages_low = {
+            "Full-Stack Architects": 28000.0,
+            "Data & ML Engineers": 31000.0,
+            "Cloud-Native DevOps": 30000.0,
+            "Frontend Craftsmen": 25000.0,
+            "Systems & Embedded": 29000.0
+        }
+        averages = cluster_averages_high if is_high_income > 0.5 else cluster_averages_low
         comparison = [
-            {"cluster": "Full-Stack Architects", "salary": 128500.0, "yours": round(predicted_salary, 2)},
-            {"cluster": "Data & ML Engineers", "salary": 142000.0, "yours": round(predicted_salary, 2)},
-            {"cluster": "Cloud-Native DevOps", "salary": 135000.0, "yours": round(predicted_salary, 2)},
-            {"cluster": "Frontend Craftsmen", "salary": 115000.0, "yours": round(predicted_salary, 2)},
-            {"cluster": "Systems & Embedded", "salary": 132000.0, "yours": round(predicted_salary, 2)}
+            {"cluster": c, "salary": avg, "yours": round(predicted_salary, 2)}
+            for c, avg in averages.items()
         ]
+
         
         return {
             "predicted_salary": round(predicted_salary, 2),

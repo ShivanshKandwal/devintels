@@ -274,24 +274,107 @@ def _pick_multi(rng: np.random.Generator, pool: list[str], weights: list[float] 
     return ";".join(chosen)
 
 
-def _salary_for_country(rng: np.random.Generator, country: str) -> float:
-    """Generate a realistic salary in USD for a given country."""
-    medians: dict[str, tuple[float, float]] = {
-        "United States of America": (95_000, 45_000),
-        "United Kingdom of Great Britain and Northern Ireland": (65_000, 25_000),
-        "Germany": (70_000, 25_000),
-        "Canada": (72_000, 28_000),
-        "Australia": (78_000, 30_000),
-        "Switzerland": (110_000, 35_000),
-        "India": (14_000, 10_000),
-        "Brazil": (18_000, 12_000),
-        "Nigeria": (8_000, 6_000),
-        "Poland": (30_000, 15_000),
-        "France": (52_000, 20_000),
+def _parse_years(val_str: str) -> float:
+    if pd.isna(val_str) or not val_str:
+        return 0.0
+    val_str = str(val_str).strip()
+    if val_str == "Less than 1 year":
+        return 0.5
+    if val_str == "More than 50 years":
+        return 51.0
+    try:
+        return float(val_str)
+    except ValueError:
+        return 0.0
+
+
+def _generate_realistic_salary(
+    rng: np.random.Generator,
+    country: str,
+    yrs_pro_str: str,
+    dev_type_str: str,
+    org_size_str: str,
+    ed_level_str: str,
+    languages_str: str,
+    ai_select_str: str,
+) -> float:
+    """Generate a realistic developer salary in USD based on multiple features."""
+    medians: dict[str, float] = {
+        "United States of America": 135_000.0,
+        "Switzerland": 125_000.0,
+        "Germany": 105_000.0,
+        "Australia": 108_000.0,
+        "Canada": 102_000.0,
+        "United Kingdom of Great Britain and Northern Ireland": 102_000.0,
+        "France": 92_000.0,
+        "Sweden": 90_000.0,
+        "Netherlands": 94_000.0,
+        "Israel": 106_000.0,
+        "Japan": 88_000.0,
+        "South Korea": 86_000.0,
+        "Poland": 24_000.0,
+        "Brazil": 22_000.0,
+        "India": 20_000.0,
+        "Nigeria": 16_000.0,
+        "Pakistan": 16_000.0,
     }
-    median, std = medians.get(country, (35_000, 20_000))
-    salary = rng.normal(median, std)
-    return float(max(salary, 1_200))
+    base = medians.get(country, 38_000.0)
+
+    # 1. Experience multiplier (quadratic curve with diminishing returns, peaking at 35 years)
+    y_pro = _parse_years(yrs_pro_str)
+    y_clamped = min(35.0, y_pro)
+    exp_mult = 1.0 + 0.07 * y_clamped - 0.001 * (y_clamped ** 2)
+
+    # 2. DevType multiplier
+    dev_mult = 1.0
+    if dev_type_str and not pd.isna(dev_type_str):
+        dt_lower = str(dev_type_str).lower()
+        if any(r in dt_lower for r in ["data scientist", "machine learning", "devops", "cloud", "manager", "architect"]):
+            dev_mult = 1.15
+        elif any(r in dt_lower for r in ["front-end", "qa", "test", "designer", "academic", "student"]):
+            dev_mult = 0.90
+
+    # 3. OrgSize multiplier
+    org_mult = 1.0
+    if org_size_str and not pd.isna(org_size_str):
+        os_str = str(org_size_str)
+        if "10,000 or more" in os_str:
+            org_mult = 1.15
+        elif "5,000 to 9,999" in os_str or "1,000 to 4,999" in os_str:
+            org_mult = 1.08
+        elif "Just me" in os_str or "2 to 9" in os_str:
+            org_mult = 0.85
+
+    # 4. EdLevel multiplier
+    ed_mult = 1.0
+    if ed_level_str and not pd.isna(ed_level_str):
+        ed_str = str(ed_level_str)
+        if "Professional degree" in ed_str:
+            ed_mult = 1.10
+        elif "Master's degree" in ed_str:
+            ed_mult = 1.05
+        elif "Primary/elementary" in ed_str or "Secondary school" in ed_str:
+            ed_mult = 0.85
+
+    # 5. Tech Stack & AI multiplier
+    tech_mult = 1.0
+    if languages_str and not pd.isna(languages_str):
+        langs_lower = str(languages_str).lower()
+        if any(l in langs_lower for l in ["rust", "go", "python"]):
+            tech_mult += 0.03
+    if ai_select_str == "Yes":
+        tech_mult += 0.02
+
+    # Calculate salary
+    salary = base * exp_mult * dev_mult * org_mult * ed_mult * tech_mult
+
+    # Add log-normal noise for realistic variance (reduced to 0.07 to prevent cross-group overlaps)
+    noise = rng.lognormal(0.0, 0.07)
+    salary *= noise
+
+    # Clip to realistic bounds
+    return float(min(320_000.0, max(2_000.0, salary)))
+
 
 
 YEARS_CODE_VALS = [
@@ -346,7 +429,21 @@ def generate_demo_data(
         n_dev_types = rng.integers(1, 5)
         dev_type = ";".join(rng.choice(DEV_TYPES, size=min(n_dev_types, len(DEV_TYPES)), replace=False))
 
-        salary = _salary_for_country(rng, country) if is_employed and rng.random() > 0.2 else np.nan
+        org_size = rng.choice(ORG_SIZES, p=ORG_SIZES_W) if is_employed else np.nan
+        ed_level = rng.choice(ED_LEVELS, p=ED_LEVELS_W)
+        langs_worked = _pick_multi(rng, LANGUAGES, LANG_WEIGHTS, min_items=2, max_items=8)
+        ai_select = rng.choice(AI_SELECT, p=AI_SELECT_W)
+
+        salary = _generate_realistic_salary(
+            rng=rng,
+            country=country,
+            yrs_pro_str=yrs_pro if is_employed else np.nan,
+            dev_type_str=dev_type,
+            org_size_str=org_size,
+            ed_level_str=ed_level,
+            languages_str=langs_worked,
+            ai_select_str=ai_select,
+        ) if is_employed and rng.random() > 0.2 else np.nan
         work_exp = int(rng.integers(0, 41)) if is_employed else (int(rng.integers(0, 10)) if rng.random() > 0.5 else np.nan)
 
         record: dict[str, Any] = {
@@ -355,17 +452,17 @@ def generate_demo_data(
             "Employment": employment,
             "RemoteWork": rng.choice(REMOTE_WORK, p=REMOTE_WORK_W) if is_employed else np.nan,
             "CodingActivities": _pick_multi(rng, CODING_ACTIVITIES, max_items=4),
-            "EdLevel": rng.choice(ED_LEVELS, p=ED_LEVELS_W),
+            "EdLevel": ed_level,
             "YearsCode": yrs_code,
             "YearsCodePro": yrs_pro if is_employed else np.nan,
             "DevType": dev_type,
-            "OrgSize": rng.choice(ORG_SIZES, p=ORG_SIZES_W) if is_employed else np.nan,
+            "OrgSize": org_size,
             "Country": country,
             "Currency": rng.choice(CURRENCIES, p=CURRENCIES_W),
             "ConvertedCompYearly": salary,
             "JobSat": rng.choice(JOB_SAT, p=JOB_SAT_W) if is_employed else np.nan,
             "Industry": rng.choice(INDUSTRIES, p=INDUSTRIES_W) if is_employed else np.nan,
-            "LanguageHaveWorkedWith": _pick_multi(rng, LANGUAGES, LANG_WEIGHTS, min_items=2, max_items=8),
+            "LanguageHaveWorkedWith": langs_worked,
             "LanguageWantToWorkWith": _pick_multi(rng, LANGUAGES, LANG_WEIGHTS, min_items=1, max_items=5),
             "DatabaseHaveWorkedWith": _pick_multi(rng, DATABASES, DB_WEIGHTS, min_items=1, max_items=5),
             "DatabaseWantToWorkWith": _pick_multi(rng, DATABASES, DB_WEIGHTS, min_items=0, max_items=4),
@@ -387,7 +484,7 @@ def generate_demo_data(
                  "A few times per week", "Daily or almost daily", "I have never participated in Q&A on Stack Overflow"],
                 p=[0.25, 0.25, 0.15, 0.05, 0.30],
             ),
-            "AISelect": rng.choice(AI_SELECT, p=AI_SELECT_W),
+            "AISelect": ai_select,
             "AISent": rng.choice(AI_SENT, p=AI_SENT_W),
             "AIToolCurrentlyUsing": _pick_multi(rng, AI_DEV + AI_SEARCH, min_items=0, max_items=4) if rng.random() > 0.35 else np.nan,
             "AIToolInterested": _pick_multi(rng, AI_DEV + AI_SEARCH, min_items=0, max_items=3) if rng.random() > 0.40 else np.nan,

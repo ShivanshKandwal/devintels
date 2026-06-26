@@ -104,6 +104,7 @@ def train_career_model(
             learning_rate=0.1,
             subsample=0.8,
             colsample_bytree=0.8,
+            monotone_constraints={"years_code_pro_num": 1},
             random_state=42,
             verbosity=0,
         )
