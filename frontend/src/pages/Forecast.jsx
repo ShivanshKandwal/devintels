@@ -6,7 +6,9 @@ import {
 } from 'recharts'
 import { TrendingUp, TrendingDown, ArrowUp, ArrowDown, Info } from 'lucide-react'
 import TechPill from '../components/TechPill'
-import { forecastData, techCategories, TECH_COLORS } from '../lib/demoData'
+import { forecastData as demoForecastData, techCategories, TECH_COLORS } from '../lib/demoData'
+import { getForecast } from '../lib/api'
+import { useEffect } from 'react'
 
 /* ── Custom chart tooltip ────────────────────────────────────────── */
 function ChartTooltip({ active, payload, label }) {
@@ -31,6 +33,8 @@ function ChartTooltip({ active, payload, label }) {
 export default function Forecast() {
   const [activeCategory, setActiveCategory] = useState('Languages')
   const [selectedTechs, setSelectedTechs] = useState(['Python', 'JavaScript', 'TypeScript', 'Rust'])
+  const [loadedForecasts, setLoadedForecasts] = useState(demoForecastData)
+  const [queriedTechs, setQueriedTechs] = useState([])
 
   const categories = Object.keys(techCategories)
 
@@ -40,13 +44,32 @@ export default function Forecast() {
     )
   }
 
+  // Fetch forecast from API for selected technologies
+  useEffect(() => {
+    selectedTechs.forEach((tech) => {
+      if (!queriedTechs.includes(tech)) {
+        setQueriedTechs((prev) => [...prev, tech])
+        getForecast(tech)
+          .then((res) => {
+            setLoadedForecasts((prev) => ({
+              ...prev,
+              [tech]: res.data.forecast,
+            }))
+          })
+          .catch((err) => {
+            console.warn(`Failed to fetch forecast for ${tech}, using demo data.`, err.message)
+          })
+      }
+    })
+  }, [selectedTechs, queriedTechs])
+
   // Merge data for chart: { year, Python, JavaScript, ... }
   const chartData = useMemo(() => {
     const years = [2022, 2023, 2024, 2025, 2026]
     return years.map((year) => {
       const entry = { year }
       selectedTechs.forEach((tech) => {
-        const techPoints = forecastData[tech]
+        const techPoints = loadedForecasts[tech]
         if (!techPoints) return
         const point = techPoints.find((p) => p.year === year)
         if (point) {
@@ -58,11 +81,11 @@ export default function Forecast() {
       })
       return entry
     })
-  }, [selectedTechs])
+  }, [selectedTechs, loadedForecasts])
 
   // Rising & Falling
   const trends = useMemo(() => {
-    const all = Object.entries(forecastData).map(([name, pts]) => {
+    const all = Object.entries(loadedForecasts).map(([name, pts]) => {
       const v2024 = pts.find((p) => p.year === 2024)?.adoption || 0
       const v2026 = pts.find((p) => p.year === 2026)?.adoption || 0
       return { name, val2024: v2024, val2026: v2026, change: v2026 - v2024 }
@@ -72,7 +95,7 @@ export default function Forecast() {
       rising: all.filter((t) => t.change > 0).slice(0, 6),
       falling: all.filter((t) => t.change < 0).slice(0, 6),
     }
-  }, [])
+  }, [loadedForecasts])
 
   return (
     <div className="pt-32 pb-16 min-h-screen">

@@ -27,6 +27,7 @@ function Particles() {
     window.addEventListener('resize', resize)
 
     for (let i = 0; i < 60; i++) {
+      const isPink = Math.random() > 0.5
       particles.push({
         x: Math.random() * canvas.offsetWidth,
         y: Math.random() * canvas.offsetHeight,
@@ -34,6 +35,7 @@ function Particles() {
         vx: (Math.random() - 0.5) * 0.3,
         vy: (Math.random() - 0.5) * 0.3,
         alpha: Math.random() * 0.4 + 0.1,
+        color: isPink ? `rgba(236, 72, 153, ${Math.random() * 0.4 + 0.1})` : `rgba(14, 165, 233, ${Math.random() * 0.4 + 0.1})`
       })
     }
 
@@ -46,7 +48,7 @@ function Particles() {
         if (p.y < 0 || p.y > canvas.offsetHeight) p.vy *= -1
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(124, 58, 237, ${p.alpha})`
+        ctx.fillStyle = p.color
         ctx.fill()
       })
 
@@ -60,7 +62,7 @@ function Particles() {
             ctx.beginPath()
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.strokeStyle = `rgba(124, 58, 237, ${0.06 * (1 - dist / 120)})`
+            ctx.strokeStyle = `rgba(14, 165, 233, ${0.08 * (1 - dist / 120)})`
             ctx.lineWidth = 0.5
             ctx.stroke()
           }
@@ -120,8 +122,8 @@ export default function Landing() {
         <Particles />
 
         {/* gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-accent/15 rounded-full blur-3xl pointer-events-none pulse-glow" />
-        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none pulse-glow" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-400/15 rounded-full blur-3xl pointer-events-none pulse-glow" />
+        <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-pink-400/15 rounded-full blur-3xl pointer-events-none pulse-glow" style={{ animationDelay: '1s' }} />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
           <motion.div
@@ -130,13 +132,13 @@ export default function Landing() {
             transition={{ duration: 0.8 }}
           >
             {/* badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-purple-light mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-pink-600 mb-8">
               <Sparkles className="w-3.5 h-3.5" />
               Powered by ML · NLP · Clustering
             </div>
 
             <h1 className="text-5xl sm:text-7xl font-black tracking-tight mb-6">
-              <span className="bg-gradient-to-r from-white via-purple-light to-purple-accent bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                 DevIntel
               </span>
             </h1>

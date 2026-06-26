@@ -7,8 +7,10 @@ import { MapPin, Users, DollarSign, Code, ChevronDown, Info } from 'lucide-react
 import ClusterBadge from '../components/ClusterBadge'
 import TechPill from '../components/TechPill'
 import {
-  umapPoints, clusterProfiles, CLUSTER_COLORS, CLUSTER_NAMES,
+  umapPoints as demoUmapPoints, clusterProfiles as demoClusterProfiles, CLUSTER_COLORS, CLUSTER_NAMES,
 } from '../lib/demoData'
+import { getClusters } from '../lib/api'
+import { useApi } from '../hooks/useApi'
 
 /* ── Color modes ─────────────────────────────────────────────────── */
 const COLOR_MODES = ['Cluster', 'Salary', 'Experience']
@@ -46,15 +48,23 @@ function ScatterTooltip({ active, payload }) {
 
 /* ── Page ─────────────────────────────────────────────────────────── */
 export default function Landscape() {
+  const { data: clustersData } = useApi(getClusters, {
+    points: demoUmapPoints,
+    profiles: demoClusterProfiles
+  })
+
+  const points = clustersData?.points || demoUmapPoints
+  const profiles = clustersData?.profiles || demoClusterProfiles
+
   const [selectedCluster, setSelectedCluster] = useState(null)
   const [colorMode, setColorMode] = useState('Cluster')
   const [sortCol, setSortCol] = useState('count')
   const [sortDir, setSortDir] = useState('desc')
 
   const filteredPoints = useMemo(() => {
-    if (selectedCluster === null) return umapPoints
-    return umapPoints.filter((p) => p.cluster === selectedCluster)
-  }, [selectedCluster])
+    if (selectedCluster === null) return points
+    return points.filter((p) => p.cluster === selectedCluster)
+  }, [selectedCluster, points])
 
   const pointsByCluster = useMemo(() => {
     const groups = {}
@@ -73,11 +83,11 @@ export default function Landscape() {
   }
 
   const sorted = useMemo(() => {
-    return [...clusterProfiles].sort((a, b) => {
+    return [...profiles].sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1
       return (a[sortCol] - b[sortCol]) * dir
     })
-  }, [sortCol, sortDir])
+  }, [sortCol, sortDir, profiles])
 
   const toggleSort = (col) => {
     if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -119,7 +129,7 @@ export default function Landscape() {
               )}
             </div>
 
-            {clusterProfiles.map((c) => {
+            {profiles.map((c) => {
               const active = selectedCluster === c.id
               return (
                 <motion.button
