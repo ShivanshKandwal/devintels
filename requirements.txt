@@ -10,26 +10,26 @@ xgboost>=2.0.0
 lightgbm>=4.0.0
 shap>=0.42.0
 
-# Time Series
-prophet>=1.1.4
-statsmodels>=0.14.0
-pmdarima>=2.0.0
+# Time Series (Dev/Training only)
+# prophet>=1.1.4
+# statsmodels>=0.14.0
+# pmdarima>=2.0.0
 
-# NLP
-sentence-transformers>=2.2.0
-umap-learn>=0.5.0
-hdbscan>=0.8.30
-bertopic>=0.15.0
-faiss-cpu>=1.7.4
+# NLP (SentenceTransformers/PyTorch/FAISS commented for production low RAM)
+# sentence-transformers>=2.2.0
+# umap-learn>=0.5.0
+# hdbscan>=0.8.30
+# bertopic>=0.15.0
+# faiss-cpu>=1.7.4
 
-# Experimentation
-scipy>=1.11.0
-pingouin>=0.5.3
-econml>=0.14.0
+# Experimentation (Dev/Training only)
+# scipy>=1.11.0
+# pingouin>=0.5.3
+# econml>=0.14.0
 
-# Tracking & Monitoring
-mlflow>=2.7.0
-evidently>=0.4.0
+# Tracking & Monitoring (Dev/Training only)
+# mlflow>=2.7.0
+# evidently>=0.4.0
 
 # API
 fastapi>=0.103.0
@@ -37,10 +37,10 @@ uvicorn[standard]>=0.23.0
 pydantic>=2.0.0
 python-multipart>=0.0.6
 
-# Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
-plotly>=5.15.0
+# Visualization (Dev/Training only)
+# matplotlib>=3.7.0
+# seaborn>=0.12.0
+# plotly>=5.15.0
 
 # Utilities
 joblib>=1.3.0

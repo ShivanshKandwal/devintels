@@ -229,8 +229,8 @@ async def lifespan(app: FastAPI):
     app.state.startup_time = time.time()
     app.state.churn_model = None
     app.state.career_model = None
-    app.state.faiss_index = None
-    app.state.sentence_model = None
+    app.state.tfidf_vectorizer = None
+    app.state.tfidf_matrix = None
     app.state.cluster_profiles = None
     app.state.text_profiles = None
     app.state.real_clusters_data = None
@@ -238,12 +238,10 @@ async def lifespan(app: FastAPI):
     
     try:
         import joblib
-        import faiss
-        from sentence_transformers import SentenceTransformer
+        from sklearn.feature_extraction.text import TfidfVectorizer
         
         churn_path = "models/churn_xgb.pkl"
         career_path = "models/career_value_xgb.pkl"
-        faiss_path = "models/faiss.index"
         profiles_path = "models/cluster_profiles.json"
         text_profiles_path = "models/text_profiles.json"
         
@@ -260,19 +258,6 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("Career value model not found at %s. Falling back to high-fidelity mock data.", career_path)
             
-        if os.path.exists(faiss_path):
-            app.state.faiss_index = faiss.read_index(faiss_path)
-            logger.info("Successfully loaded FAISS Index from %s", faiss_path)
-        else:
-            logger.warning("FAISS Index not found at %s. Falling back to high-fidelity mock data.", faiss_path)
-
-        # Preload SentenceTransformer for search encoding
-        try:
-            app.state.sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
-            logger.info("Successfully preloaded SentenceTransformer model.")
-        except Exception as e:
-            logger.error("Failed to preload SentenceTransformer: %s", e)
-            
         if os.path.exists(profiles_path):
             with open(profiles_path, encoding="utf-8") as f:
                 app.state.cluster_profiles = json.load(f)
@@ -282,6 +267,15 @@ async def lifespan(app: FastAPI):
             with open(text_profiles_path, encoding="utf-8") as f:
                 app.state.text_profiles = json.load(f)
             logger.info("Successfully loaded text profiles.")
+            
+            # Initialize TF-IDF Vectorizer and build representation matrix
+            try:
+                vectorizer = TfidfVectorizer(stop_words='english')
+                app.state.tfidf_matrix = vectorizer.fit_transform(app.state.text_profiles)
+                app.state.tfidf_vectorizer = vectorizer
+                logger.info("Successfully fit TF-IDF vectorizer on %d text profiles.", len(app.state.text_profiles))
+            except Exception as e:
+                logger.error("Failed to fit TF-IDF vectorizer: %s", e)
 
         # Try to load real clusters data and merge for scatter plot
         try:
@@ -665,48 +659,48 @@ def predict_career(profile: ProfileInput):
 @app.post("/search/similar", response_model=SearchResponse, tags=["NLP"])
 def search_similar(request: SearchRequest):
     """
-    Semantically search for developer cohort matches using SentenceTransformers and FAISS index.
+    Search for developer cohort matches using TF-IDF cosine similarity.
     """
     if not request.query.strip():
         raise HTTPException(status_code=400, detail="Query text cannot be empty.")
         
-    if app.state.faiss_index is None or app.state.sentence_model is None or app.state.text_profiles is None:
-        logger.info("FAISS index/models are offline. Serving mock search response.")
+    if app.state.tfidf_vectorizer is None or app.state.tfidf_matrix is None or app.state.text_profiles is None:
+        logger.info("TF-IDF search engine is offline. Serving mock search response.")
         return DEMO_SIMILAR_DEVS
         
     try:
-        # 1. Encode query
-        query_emb = app.state.sentence_model.encode([request.query])[0]
+        # 1. Transform query
+        query_vec = app.state.tfidf_vectorizer.transform([request.query])
         
-        # 2. Search FAISS index
-        query_vec = query_emb.reshape(1, -1).astype(np.float32)
-        # Normalize
-        norm = np.linalg.norm(query_vec)
-        if norm > 0:
-            query_vec = query_vec / norm
-            
-        distances, indices = app.state.faiss_index.search(query_vec, 10)
+        # 2. Compute Cosine Similarities
+        # tfidf_matrix shape: (n_profiles, n_features)
+        # query_vec shape: (1, n_features)
+        # result shape: (n_profiles,)
+        similarities = (app.state.tfidf_matrix * query_vec.T).toarray().flatten()
+        
+        # 3. Get top 10 indices sorted by similarity descending
+        top_indices = np.argsort(similarities)[::-1][:10]
         
         sim_devs = []
         cluster_scores_dict = {"Full-Stack Architects": 0.0, "Data & ML Engineers": 0.0, "Cloud-Native DevOps": 0.0, "Frontend Craftsmen": 0.0, "Systems & Embedded": 0.0}
         
-        # 3. Parse matches
-        for rank, (score, idx) in enumerate(zip(distances[0], indices[0])):
-            if idx == -1 or idx >= len(app.state.text_profiles):
-                continue
-                
-            profile_text = app.state.text_profiles[idx]
-            # Convert raw score (Inner Product distance) to a normalized similarity percentage (e.g. 0.0 to 1.0)
-            similarity = float(score)
-            # Clip between 0 and 1
+        # 4. Parse matches
+        for rank, idx in enumerate(top_indices):
+            score = float(similarities[idx])
+            # Scale similarity between 0.5 and 0.99 for clean UI gauges
+            similarity = 0.5 + (score * 0.49)
             similarity = max(0.5, min(0.99, similarity))
             
+            profile_text = app.state.text_profiles[idx]
             dev = parse_profile_text_to_dev(profile_text, idx, similarity)
             
             # Map this developer's attributes to a UI cluster
-            _, ui_cluster_name = map_real_cluster_to_ui_cluster(dev["language"] + " " + dev["stage"], {"uses_python": 1.0 if dev["language"] == "Python" else 0.0, "uses_javascript": 1.0 if dev["language"] in ("JavaScript", "TypeScript") else 0.0})
+            _, ui_cluster_name = map_real_cluster_to_ui_cluster(
+                dev["language"] + " " + dev["stage"], 
+                {"uses_python": 1.0 if dev["language"] == "Python" else 0.0, 
+                 "uses_javascript": 1.0 if dev["language"] in ("JavaScript", "TypeScript") else 0.0}
+            )
             
-            # Only take top 5 for display
             if len(sim_devs) < 5:
                 sim_devs.append(dev)
                 
@@ -752,7 +746,7 @@ def search_similar(request: SearchRequest):
             "similar_developers": sim_devs
         }
     except Exception as e:
-        logger.error("FAISS retrieval query failed: %s. Serving fallback.", str(e))
+        logger.error("TF-IDF retrieval query failed: %s. Serving fallback.", str(e))
         return DEMO_SIMILAR_DEVS
 
 @app.get("/data/clusters", response_model=ClustersResponse, tags=["Data Viz"])
