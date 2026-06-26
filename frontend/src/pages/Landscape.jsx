@@ -201,19 +201,17 @@ export default function Landscape() {
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <XAxis type="number" dataKey="x" tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                   <YAxis type="number" dataKey="y" tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ScatterTooltip />} cursor={false} />
-                  {Object.entries(pointsByCluster).map(([cId, points]) => (
-                    <Scatter key={cId} data={points} isAnimationActive={true} animationDuration={1200}>
-                      {points.map((p, i) => (
-                        <Cell
-                          key={i}
-                          fill={getPointColor(p)}
-                          fillOpacity={selectedCluster === null || selectedCluster === p.cluster ? 0.7 : 0.1}
-                          r={3}
-                        />
-                      ))}
-                    </Scatter>
-                  ))}
+                  <Tooltip content={<ScatterTooltip />} cursor={false} isAnimationActive={false} transitionDuration={0} />
+                  <Scatter data={filteredPoints} isAnimationActive={false}>
+                    {filteredPoints.map((p, i) => (
+                      <Cell
+                        key={i}
+                        fill={getPointColor(p)}
+                        fillOpacity={selectedCluster === null || selectedCluster === p.cluster ? 0.75 : 0.15}
+                        r={selectedCluster === p.cluster ? 4 : 3}
+                      />
+                    ))}
+                  </Scatter>
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
